@@ -9,12 +9,12 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | Stage | Name | Target Capabilities | Status |
 | :---: | :--- | :--- | :---: |
 | **0** | **Architecture & Repository Foundations** | Complete architecture spec, config schema, event bus, logging, repo setup | ✅ **Complete** |
-| **1** | **Core Infrastructure & Security Engine** | Core agent contracts, TaskPlanner interfaces, Executor state machine, PermissionManager, EmergencyStop | 🚀 **In Progress** |
-| **2** | **OS Abstraction Layer** | Abstract `OSController`, `WindowsController`, `LinuxController`, process/window/telemetry detection | 🚀 **In Progress** |
-| **3** | **Basic PC Tools** | Filesystem search/read/write, terminal command executor, system volume, app launcher, verification hooks | 📋 Planned |
-| **4** | **Local LLM Integration** | `LLMProvider` abstraction, Ollama & llama.cpp connectors, offline-first fallback router | 📋 Planned |
-| **5** | **Voice Pipeline** | Modular VAD, wake-word engine ("Hey Neron"), Whisper STT, Piper TTS | 📋 Planned |
-| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | 📋 Planned |
+| **1** | **Core Infrastructure & Security Engine** | Core agent contracts, TaskPlanner interfaces, Executor state machine, PermissionManager, EmergencyStop | ✅ **Complete** |
+| **2** | **OS Abstraction Layer** | Abstract `OSController`, `WindowsController`, `LinuxController`, process/window/telemetry detection | ✅ **Complete** |
+| **3** | **Basic PC Tools** | Filesystem search/read/write, terminal command executor, system volume, app launcher, verification hooks | ✅ **Complete** |
+| **4** | **Local LLM Integration** | `LLMProvider` abstraction, Ollama & llama.cpp connectors, offline-first fallback router | ✅ **Complete** |
+| **5** | **Voice Pipeline** | Modular VAD, wake-word engine ("Hey Neron"), Whisper STT, Piper/System TTS | ✅ **Complete** |
+| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | 🚀 **In Progress** |
 | **7** | **Desktop Operating Console & UI** | Desktop console, system tray integration, active task monitor, permission approval UI | 📋 Planned |
 | **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | 📋 Planned |
 | **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | 📋 Planned |

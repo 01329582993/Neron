@@ -1,11 +1,12 @@
 """Neron core agent coordinator."""
 
-from typing import Any, Dict, Optional
+from neron.ai.routing.router import AIRouter
 from neron.config.manager import ConfigManager
 from neron.core.context.manager import ContextManager
 from neron.core.events.bus import EventBus, get_default_bus
 from neron.core.executor.base import ExecutionEngine
 from neron.core.planner.base import BasePlanner, HeuristicPlanner
+from neron.core.planner.llm_planner import LLMPlanner
 from neron.core.state.models import TaskPlan
 from neron.os.base import OSController, get_os_controller
 from neron.security.emergency_stop import EmergencyStopCoordinator, get_emergency_stop
@@ -28,6 +29,7 @@ class NeronAgent:
         permission_manager: Optional[PermissionManager] = None,
         tool_registry: Optional[ToolRegistry] = None,
         planner: Optional[BasePlanner] = None,
+        ai_router: Optional[AIRouter] = None,
         event_bus: Optional[EventBus] = None,
         emergency_stop: Optional[EmergencyStopCoordinator] = None,
     ):
@@ -35,6 +37,9 @@ class NeronAgent:
         self.os_controller = os_controller or get_os_controller()
         self.event_bus = event_bus or get_default_bus()
         self.emergency_stop = emergency_stop or get_emergency_stop()
+
+        # Initialize AI router
+        self.ai_router = ai_router or AIRouter(ai_config=self.config_manager.config.ai)
 
         # Initialize permission engine with configured security mode
         configured_mode = SecurityMode(self.config_manager.config.security.profile)
@@ -52,7 +57,7 @@ class NeronAgent:
 
         # Initialize context and planner
         self.context_manager = ContextManager(os_controller=self.os_controller)
-        self.planner = planner or HeuristicPlanner()
+        self.planner = planner or LLMPlanner(ai_router=self.ai_router)
 
         # Initialize executor
         self.executor = ExecutionEngine(
