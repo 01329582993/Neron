@@ -4,6 +4,41 @@ All notable changes to the Neron platform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 13 — Developer Agent & Self-Improvement Subsystem**:
+  - `neron/developer/introspector.py`:
+    - `CodeIntrospector`: AST-powered Python source analyzer extracting class definitions, method signatures, return types, line spans, docstrings, imports, and top-level constants.
+    - Syntax validator verifying code strings without execution via `compile`/`ast.parse` and returning line numbers and error diagnostics.
+    - Symbol locator scanning repository files to find matching functions and classes across modules.
+  - `neron/developer/test_runner.py`:
+    - `TestRunner`: Automated subprocess-based pytest execution engine with timeout isolation, coverage reporting, and structured result parsing (`TestResult`).
+    - Robust pytest summary parser extracting pass/fail/skip/error counts, execution duration, and failure traces.
+  - `neron/developer/patcher.py`:
+    - `PatchGenerator`: Generates unified diffs (`difflib.unified_diff`) and applies patch hunks to target files.
+    - `PatchValidator`: Validates proposed code patches against protected system paths, dangerous patterns (root deletion, unbounded directory recursion), and Python AST syntax errors.
+  - `neron/developer/scaffolder.py`:
+    - `PluginScaffolder`: Complete plugin scaffolding generator (`neron plugin create <name>`) producing fully compliant plugin directories with `plugin.yaml` manifest, `PluginBase` lifecycle subclass, `BaseTool` implementation, unit tests, and README.
+  - `neron/developer/agent.py`:
+    - `DeveloperAgent`: Master coordinator providing unified interfaces for introspection, testing, patch creation, scaffolding, and error diagnosis with remediation hints.
+  - `neron/tools/developer/`:
+    - `dev.inspect_source`: Inspects modules or files for AST structure and docstrings.
+    - `dev.run_tests`: Executes pytest suites and returns structured execution metrics.
+    - `dev.validate_code`: Validates Python syntax and structure without execution.
+    - `dev.create_plugin`: Scaffolds verified plugin extensions into `plugins/`.
+  - Registered all developer tools in default `ToolRegistry` and added intent patterns in `DAGPlanner`.
+  - CLI commands in `neron/__main__.py`:
+    - `neron plugin create <name> [--desc DESC] [--tool TOOL]`
+    - `neron --test [TARGET]`
+    - `neron --inspect <MODULE_OR_FILE>`
+  - `tests/test_developer.py`: 40 comprehensive unit and integration tests covering AST parsing, test runner parsing, patch generation, plugin runtime verification, developer tools, and DAG planning.
+
+### Test Suite
+- **254/254 tests passing** (214 previous + 40 new Stage 13 tests, zero regressions).
+
+---
+
 ## [0.8.0-alpha] - 2026-10-09
 
 ### Added

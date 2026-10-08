@@ -162,7 +162,54 @@ class DAGPlanner(BasePlanner):
             plan.state = TaskState.PENDING
             return plan
 
+        # ── Pattern: Run Unit Tests / Test Suite (Stage 13) ───────────────
+        if any(kw in lower for kw in ["run tests", "run test suite", "run unit tests", "test codebase", "execute tests", "run pytest"]):
+            target_match = re.search(r"(?:run\s+tests?\s+(?:on|for|in)?\s+)([\w\./\\-]+)", lower)
+            target_arg = target_match.group(1).strip() if target_match else None
+            plan.steps = [
+                PlanStep(
+                    tool_name="dev.run_tests",
+                    arguments={"target": target_arg} if target_arg else {},
+                    description=f"Run test suite{f' for {target_arg}' if target_arg else ''}",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Inspect Module / Source Code (Stage 13) ───────────────
+        inspect_match = re.search(r"(?:inspect\s+(?:source|module|code|file)?\s+)([\w\./\\-]+)", lower)
+        if inspect_match:
+            mod_target = inspect_match.group(1).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="dev.inspect_source",
+                    arguments={"target": mod_target},
+                    description=f"Inspect source structure of '{mod_target}'",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Create / Scaffold Plugin (Stage 13) ───────────────────
+        plugin_create_match = re.search(r"(?:create|scaffold|generate)\s+plugin\s+([a-zA-Z0-9_\-]+)", lower)
+        if plugin_create_match:
+            raw_plugin_id = plugin_create_match.group(1).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="dev.create_plugin",
+                    arguments={
+                        "plugin_id": raw_plugin_id,
+                        "name": raw_plugin_id.replace("-", " ").replace("_", " ").title(),
+                        "description": f"Custom {raw_plugin_id} plugin.",
+                    },
+                    description=f"Scaffold new plugin '{raw_plugin_id}'",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
         # ── Pattern: "prepare development environment" ─────────────────────
+
         if "prepare" in lower and "dev" in lower:
             telemetry_step = PlanStep(
                 tool_name="system.telemetry",

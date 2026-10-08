@@ -213,9 +213,37 @@ def interactive_repl(agent: NeronAgent) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    # ── Handle 'neron plugin create <name>' subcommand ─────────────────────────
+    if len(sys.argv) > 1 and sys.argv[1] == "plugin":
+        sub_parser = argparse.ArgumentParser(prog="neron plugin", description="Neron plugin management")
+        sub_sub = sub_parser.add_subparsers(dest="subcommand")
+        create_p = sub_sub.add_parser("create", help="Create a new plugin scaffold")
+        create_p.add_argument("name", help="Plugin name or ID")
+        create_p.add_argument("--desc", default="A community extension for Neron.", help="Plugin description")
+        create_p.add_argument("--tool", default=None, help="Initial tool ID")
+        sub_args = sub_parser.parse_args(sys.argv[2:])
+        if sub_args.subcommand == "create":
+            from neron.developer.scaffolder import PluginScaffolder, PluginScaffoldConfig
+            scaffolder = PluginScaffolder()
+            plugin_id = sub_args.name.lower().replace(" ", "_")
+            cfg = PluginScaffoldConfig(
+                plugin_id=plugin_id,
+                name=sub_args.name,
+                description=sub_args.desc,
+                tool_name=sub_args.tool,
+            )
+            created = scaffolder.create_plugin_scaffold(cfg)
+            print(f"Successfully created plugin '{plugin_id}' at: {created['directory']}")
+            sys.exit(0)
+        else:
+            sub_parser.print_help()
+            sys.exit(1)
+
     parser = argparse.ArgumentParser(description="NERON — Modular Local-First Computer Agent")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics and exit")
     parser.add_argument("--audit-history", action="store_true", help="Display recent security audit log")
+    parser.add_argument("--test", nargs="?", const="all", help="Run automated test suite (optionally specify test target)")
+    parser.add_argument("--inspect", type=str, help="Inspect source structure of a module or file")
     parser.add_argument(
         "--security", type=str,
         choices=["SAFE", "STANDARD", "POWER_USER", "CUSTOM"],
@@ -232,6 +260,42 @@ def main() -> None:
 
     if args.audit_history:
         show_audit_history()
+        return
+
+    if args.test:
+        from neron.developer.test_runner import TestRunner
+        runner = TestRunner()
+        target = None if args.test == "all" else args.test
+        print(f"Executing Neron test suite{f' ({target})' if target else ''}...")
+        res = runner.run_tests(target=target)
+        print(f"Results: {res.passed} passed, {res.failed} failed, {res.skipped} skipped in {res.duration_seconds}s")
+        if res.error_summary:
+            for err in res.error_summary:
+                print(f"  [FAIL] {err}")
+        sys.exit(0 if res.success else 1)
+
+    if args.inspect:
+        from pathlib import Path
+        from neron.developer.introspector import CodeIntrospector
+        introspector = CodeIntrospector()
+        target = args.inspect
+        p = Path(target)
+        if p.is_file() or (Path.cwd() / target).is_file():
+            info = introspector.inspect_file(p if p.is_file() else (Path.cwd() / target))
+        else:
+            info = introspector.inspect_module(target)
+        print(f"\n--- Code Introspection: {target} ---")
+        print(f"Total lines: {info.get('total_lines')}")
+        print(f"Docstring: {info.get('module_docstring')}")
+        print(f"Classes ({len(info.get('classes', []))}):")
+        for c in info.get("classes", []):
+            print(f"  - {c['name']} (lines {c['lineno']}-{c['end_lineno']}): {len(c.get('methods', []))} methods")
+        print(f"Functions ({len(info.get('functions', []))}):")
+        for f in info.get("functions", []):
+            print(f"  - {f['name']} (lines {f['lineno']}-{f['end_lineno']})")
+        print(f"Imports ({len(info.get('imports', []))}):")
+        for imp in info.get("imports", []):
+            print(f"  - {imp}")
         return
 
     cfg_mgr = ConfigManager()

@@ -21,7 +21,7 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | ✅ **Complete** |
 | **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | ✅ **Complete** |
 | **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | ✅ **Complete** |
-| **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | 📋 Planned |
+| **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | ✅ **Complete** |
 | **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | 📋 Planned |
 | **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | 📋 Planned |
 
@@ -123,10 +123,10 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 - [x] Automated troubleshooting recommendations.
 
 ### Stage 13: Developer Agent & Self-Improvement
-- [ ] `DeveloperAgent` subsystem for codebase introspection.
-- [ ] Automated unit test runner and coverage evaluator.
-- [ ] Source code patch generation and syntax validator.
-- [ ] Plugin scaffolding generator (`neron plugin create <name>`).
+- [x] `DeveloperAgent` subsystem for codebase introspection.
+- [x] Automated unit test runner and coverage evaluator.
+- [x] Source code patch generation and syntax validator.
+- [x] Plugin scaffolding generator (`neron plugin create <name>`).
 
 ### Stage 14: Sandboxed Self-Update Pipeline
 - [ ] Isolated staging workspace creator (`.neron/staging/`).

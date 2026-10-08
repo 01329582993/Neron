@@ -42,6 +42,12 @@ from neron.tools.diagnostics.tools import (
     DiagnosticsRunTool,
     DiagnosticsHardwareTool,
 )
+from neron.tools.developer.tools import (
+    DevInspectSourceTool,
+    DevRunTestsTool,
+    DevValidateCodeTool,
+    DevCreatePluginScaffoldTool,
+)
 
 
 def create_default_registry(
@@ -88,6 +94,12 @@ def create_default_registry(
     registry.register(DiagnosticsRunTool())
     registry.register(DiagnosticsHardwareTool())
 
+    # Register developer tools (Stage 13)
+    registry.register(DevInspectSourceTool())
+    registry.register(DevRunTestsTool())
+    registry.register(DevValidateCodeTool())
+    registry.register(DevCreatePluginScaffoldTool())
+
     return registry
 
 
@@ -110,6 +122,10 @@ __all__ = [
     "NetworkFetchPageTool",
     "DiagnosticsRunTool",
     "DiagnosticsHardwareTool",
+    "DevInspectSourceTool",
+    "DevRunTestsTool",
+    "DevValidateCodeTool",
+    "DevCreatePluginScaffoldTool",
 ]
 
 
