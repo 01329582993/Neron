@@ -1,0 +1,55 @@
+# NERON Core Configuration File
+version: "1.0"
+
+system:
+  app_name: "Neron"
+  environment: "development" # development | production | testing
+  data_dir: "data"
+  logs_dir: "logs"
+  log_level: "INFO" # DEBUG | INFO | WARNING | ERROR
+  audit_db_path: "data/audit.db"
+
+security:
+  # Security Profile: SAFE | STANDARD | POWER_USER | CUSTOM
+  profile: "STANDARD"
+  emergency_stop_shortcut: "ctrl+alt+n"
+  # In CUSTOM mode, configure explicit capability policies:
+  custom_policies: {}
+
+ai:
+  default_provider: "ollama"
+  fallback_provider: "local_heuristic"
+  auto_offline_fallback: true
+  ollama:
+    host: "http://localhost:11434"
+    model: "llama3.2:3b"
+    timeout: 30
+    temperature: 0.2
+  openai_compatible:
+    enabled: false
+    base_url: "http://localhost:8000/v1"
+    api_key: ""
+    model: "default"
+
+voice:
+  enabled: false # Set true to enable microphone and speaker loop
+  wake_word: "hey neron"
+  sample_rate: 16000
+  vad_sensitivity: 2
+  stt_provider: "whisper" # whisper | cloud
+  tts_provider: "system"  # system | piper | cloud
+
+memory:
+  enabled: true
+  db_path: "data/memory.db"
+  short_term_history_limit: 20
+
+os:
+  process_poll_interval: 1.0
+  verify_actions: true
+  action_timeout_seconds: 15
+
+plugins:
+  directory: "plugins"
+  auto_discover: true
+  enabled: []

@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neron"
+version = "0.1.0-alpha"
+description = "Extensible, local-first AI computer agent and personal operating layer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["ai", "agent", "local-first", "automation", "os-control", "voice-assistant"]
+authors = [
+    { name = "Neron Core Team" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Monitoring",
+    "Topic :: Desktop Environment",
+]
+dependencies = [
+    "psutil>=5.9.0",
+    "PyYAML>=6.0",
+    "requests>=2.28.0",
+    "colorama>=0.4.6",
+    "typing_extensions>=4.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+vision = [
+    "Pillow>=9.0.0",
+]
+voice = [
+    "numpy>=1.22.0",
+]
+all = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "Pillow>=9.0.0",
+    "numpy>=1.22.0",
+]
+
+[project.scripts]
+neron = "neron.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["neron*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --strict-markers"

@@ -1,0 +1,66 @@
+# NERON Capability Matrix & Risk Definitions
+capabilities:
+  filesystem.read:
+    description: "Read files, list directories, and inspect metadata."
+    risk: "LOW"
+    default_prompt_in_standard: false
+
+  filesystem.write:
+    description: "Create or modify non-system files."
+    risk: "MEDIUM"
+    default_prompt_in_standard: false
+
+  filesystem.delete:
+    description: "Permanently delete files or directories."
+    risk: "HIGH"
+    default_prompt_in_standard: true
+
+  terminal.execute:
+    description: "Execute shell and terminal commands."
+    risk: "HIGH"
+    default_prompt_in_standard: true
+
+  computer.screen:
+    description: "Capture screenshots and observe UI elements."
+    risk: "MEDIUM"
+    default_prompt_in_standard: false
+
+  computer.mouse:
+    description: "Move the mouse cursor, click, drag, and scroll."
+    risk: "MEDIUM"
+    default_prompt_in_standard: false
+
+  computer.keyboard:
+    description: "Synthesize keyboard events and keystrokes."
+    risk: "HIGH"
+    default_prompt_in_standard: false
+
+  application.control:
+    description: "Open, focus, or terminate application windows."
+    risk: "MEDIUM"
+    default_prompt_in_standard: false
+
+  system.inspect:
+    description: "Inspect hardware metrics, processes, and windows."
+    risk: "LOW"
+    default_prompt_in_standard: false
+
+  system.admin:
+    description: "Perform system administrative changes or elevated commands."
+    risk: "CRITICAL"
+    default_prompt_in_standard: true
+
+  network.access:
+    description: "Send outbound HTTP and network communications."
+    risk: "MEDIUM"
+    default_prompt_in_standard: false
+
+  self.modify:
+    description: "Inspect, patch, or alter Neron source code."
+    risk: "CRITICAL"
+    default_prompt_in_standard: true
+
+  plugin.install:
+    description: "Install, update, or load third-party plugins."
+    risk: "CRITICAL"
+    default_prompt_in_standard: true
