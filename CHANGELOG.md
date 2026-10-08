@@ -4,6 +4,42 @@ All notable changes to the Neron platform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 12 — Self-Diagnostics & Health System**:
+  - `neron/diagnostics/health.py`:
+    - `HealthManager`: Comprehensive runtime system auditor checking Python environment (>=3.11), disk storage (>5GB threshold), local Ollama LLM endpoint availability, internet connectivity & round-trip latency, microphone/speaker accessibility via sounddevice/pyttsx3, and OS controller responsiveness.
+    - `HardwareCapabilityReport`: Automated hardware classification detecting physical and logical CPU cores, total/available RAM, and NVIDIA/AMD/DirectX GPU acceleration via `torch.cuda` or OS telemetry. Categorizes systems into compute tiers (`HIGH_END`, `PERFORMANCE`, `STANDARD`, `MINIMAL`) and suggests optimal local LLM models (e.g. `llama3:70b`, `qwen2.5:14b`, `mistral:7b`, `phi-3:mini`).
+    - `run_cli_diagnostics()`: ANSI-formatted diagnostic summary with color-coded health badges and remediation hints for the `--diagnose` CLI flag.
+  - `neron/tools/diagnostics/`:
+    - `diagnostics.run`: Invokes environment auditing and returns structured component status and remediation hints.
+    - `diagnostics.hardware`: Returns hardware metrics, compute tier, and model recommendations.
+  - Registered diagnostic tools in default `ToolRegistry` and wired natural language intents in `DAGPlanner`.
+  - CLI integration in `neron/__main__.py` with `--diagnose` command flag.
+  - `tests/test_diagnostics.py`: 88 comprehensive tests covering all audit routines, hardware tiers, caching, CLI output, and mock isolation.
+
+### Test Suite
+- **214/214 tests passing** (126 previous + 88 new Stage 12 tests, zero regressions).
+
+---
+
+## [0.7.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 11 — Modular Online Integrations**:
+  - `neron/network/observer.py`: `NetworkObserver` for continuous or on-demand connectivity checks with configurable TTL cache, socket pinging, and `network.status_changed` event publication.
+  - `neron/network/search.py`: `SearchEngineRouter` coordinating pluggable web search providers (`DuckDuckGoProvider`, `SearXNGProvider`, `MockSearchProvider`) with automated failover.
+  - `neron/network/web_reader.py`: `WebReader` extracting and cleaning web content with BeautifulSoup HTML stripping, readability heuristics, and token-efficient markdown generation.
+  - `neron/tools/network/`:
+    - `network.status`: Checks live internet availability and connection latency.
+    - `network.search`: Queries the web with configurable search engines and limits.
+    - `network.fetch_page`: Retrieves cleaned webpage content with word count constraints.
+  - `tests/test_network.py`: 14 tests covering network observation, search fallback routing, web extraction, and DAG planning.
+
+### Test Suite
+- **126/126 tests passing** (112 previous + 14 new Stage 11 tests, zero regressions).
+
 ---
 
 ## [0.6.0-alpha] - 2026-10-09

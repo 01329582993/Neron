@@ -92,6 +92,75 @@ class DAGPlanner(BasePlanner):
             plan.state = TaskState.PENDING
             return plan
 
+        # ── Pattern: Web Search ────────────────────────────────────────────
+        web_search = re.search(r"^(?:search\s+(?:the\s+)?(?:web|internet|online)(?:\s+for)?|google|look\s+up\s+online)\s+(.+)$", lower)
+        if web_search:
+            q = web_search.group(1).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="network.search",
+                    arguments={"query": q},
+                    description=f"Search web for '{q}'",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Fetch / Read Webpage ──────────────────────────────────
+        web_fetch = re.search(r"^(?:read\s+webpage|fetch\s+url|read\s+url|fetch\s+page)\s+(.+)$", lower)
+        if web_fetch:
+            target_url = web_fetch.group(1).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="network.fetch_page",
+                    arguments={"url": target_url},
+                    description=f"Fetch webpage '{target_url}'",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Check Internet / Network Status ───────────────────────
+        if any(kw in lower for kw in ["check internet", "internet connection", "network status", "is internet connected"]):
+            plan.steps = [
+                PlanStep(
+                    tool_name="network.status",
+                    arguments={},
+                    description="Check active internet connectivity status",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+
+
+        # ── Pattern: Run Full System Diagnostics (Stage 12) ───────────────
+        diag_full = re.search(
+            r"(?:run|start|do|perform|execute)?\s*(?:full\s+)?(?:system\s+)?diagnostics?\s*(?:check|report|scan|sweep)?",
+            lower,
+        )
+        if diag_full and any(kw in lower for kw in ["diagnos", "health check", "health report", "system check", "self-check", "selfcheck"]):
+            plan.steps = [
+                PlanStep(
+                    tool_name="diagnostics.run",
+                    arguments={"verbose": True},
+                    description="Run full system self-diagnostic sweep",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Hardware / capability check (Stage 12) ────────────────
+        if any(kw in lower for kw in ["hardware", "what cpu", "what gpu", "capability tier", "check my hardware", "hardware tier", "system hardware"]):
+            plan.steps = [
+                PlanStep(
+                    tool_name="diagnostics.hardware",
+                    arguments={},
+                    description="Evaluate system hardware capability tier",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
 
         # ── Pattern: "prepare development environment" ─────────────────────
         if "prepare" in lower and "dev" in lower:

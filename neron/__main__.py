@@ -10,7 +10,7 @@ from neron.config.manager import ConfigManager
 from neron.core.agent.base import NeronAgent
 from neron.core.executor.dag_executor import DAGExecutor
 from neron.core.planner.dag_planner import DAGPlanner
-from neron.diagnostics.health import HealthManager
+from neron.diagnostics.health import HealthManager, run_cli_diagnostics
 from neron.security.permissions import SecurityMode
 from neron.ui.console import NeronConsole, RICH_AVAILABLE
 from neron.utils.audit import AuditLedger
@@ -32,24 +32,8 @@ if sys.platform.startswith("win"):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_diagnostics() -> None:
-    """Run system diagnostics report."""
-    print("=" * 50)
-    print("           NERON SYSTEM DIAGNOSTICS")
-    print("=" * 50)
-    manager = HealthManager()
-    results = manager.run_full_diagnostics()
-    for res in results:
-        if res.status == "HEALTHY":
-            badge = "[OK]"
-        elif res.status in ("WARNING", "DEGRADED"):
-            badge = "[WARN]"
-        else:
-            badge = "[FAIL]"
-        print(f"\n{badge} {res.name}")
-        print(f"   Details: {res.details}")
-        if res.remediation_hint:
-            print(f"   Fix:     {res.remediation_hint}")
-    print("\n" + "=" * 50)
+    """Run system diagnostics report (delegates to HealthManager)."""
+    run_cli_diagnostics()
 
 
 def show_audit_history(limit: int = 20) -> None:

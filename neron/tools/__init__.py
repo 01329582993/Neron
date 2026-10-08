@@ -33,6 +33,15 @@ from neron.tools.memory.tools import (
     MemoryRecallTool,
     MemoryRememberTool,
 )
+from neron.tools.network.tools import (
+    NetworkFetchPageTool,
+    NetworkSearchTool,
+    NetworkStatusTool,
+)
+from neron.tools.diagnostics.tools import (
+    DiagnosticsRunTool,
+    DiagnosticsHardwareTool,
+)
 
 
 def create_default_registry(
@@ -70,6 +79,15 @@ def create_default_registry(
     registry.register(MemoryRecallTool())
     registry.register(MemoryForgetTool())
 
+    # Register network tools
+    registry.register(NetworkStatusTool())
+    registry.register(NetworkSearchTool())
+    registry.register(NetworkFetchPageTool())
+
+    # Register diagnostics tools (Stage 12)
+    registry.register(DiagnosticsRunTool())
+    registry.register(DiagnosticsHardwareTool())
+
     return registry
 
 
@@ -87,6 +105,12 @@ __all__ = [
     "MemoryRememberTool",
     "MemoryRecallTool",
     "MemoryForgetTool",
+    "NetworkStatusTool",
+    "NetworkSearchTool",
+    "NetworkFetchPageTool",
+    "DiagnosticsRunTool",
+    "DiagnosticsHardwareTool",
 ]
+
 
 

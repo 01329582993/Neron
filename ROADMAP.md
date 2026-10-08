@@ -16,11 +16,11 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **5** | **Voice Pipeline** | Modular VAD, wake-word engine ("Hey Neron"), Whisper STT, Piper/System TTS | ✅ **Complete** |
 | **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | ✅ **Complete** |
 | **7** | **Desktop Operating Console & UI** | Rich terminal console, active task monitor, plan step breakdown, failure hints | ✅ **Complete** |
-| **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | 📋 Planned |
-| **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | 📋 Planned |
-| **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | 📋 Planned |
-| **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | 📋 Planned |
-| **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | 📋 Planned |
+| **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | ✅ **Complete** |
+| **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | ✅ **Complete** |
+| **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | ✅ **Complete** |
+| **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | ✅ **Complete** |
+| **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | ✅ **Complete** |
 | **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | 📋 Planned |
 | **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | 📋 Planned |
 | **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | 📋 Planned |
@@ -110,15 +110,17 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 
 
 ### Stage 11: Modular Online Integrations
-- [ ] Pluggable web search engine (DuckDuckGo, SearXNG, Google).
-- [ ] Headless browser automation integration (Playwright).
-- [ ] Network status observer with zero-latency offline transition.
+- [x] Pluggable web search engine (`DuckDuckGoProvider`, `SearXNGProvider`, `MockSearchProvider`, `SearchEngineRouter`).
+- [x] Web reader and token-efficient content extractor (`WebReader` with BeautifulSoup cleaning).
+- [x] Network status observer with zero-latency cached reads (`NetworkObserver` and `network.status_changed` events).
+- [x] Built-in online tools (`network.status`, `network.search`, `network.fetch_page`).
+
 
 ### Stage 12: Self-Diagnostics & Health System
-- [ ] Comprehensive `HealthManager` environment auditor.
-- [ ] Diagnostic command (`neron --diagnose`).
-- [ ] Hardware capability evaluator (CPU cores, RAM size, GPU availability).
-- [ ] Automated troubleshooting recommendations.
+- [x] Comprehensive `HealthManager` environment auditor.
+- [x] Diagnostic command (`neron --diagnose`).
+- [x] Hardware capability evaluator (CPU cores, RAM size, GPU availability).
+- [x] Automated troubleshooting recommendations.
 
 ### Stage 13: Developer Agent & Self-Improvement
 - [ ] `DeveloperAgent` subsystem for codebase introspection.
