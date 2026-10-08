@@ -6,7 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.6.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 10 — Plugin Architecture & Extensibility**:
+  - `neron/plugins/base.py`: `PluginBase` abstract lifecycle class, `PluginMetadata` declaration contract, and `PluginState` lifecycle enum (`DISCOVERED`, `LOADED`, `ENABLED`, `DISABLED`, `ERROR`).
+  - `neron/plugins/manifest.py`: `PluginManifestValidator` parsing and validating both `plugin.yaml` and `plugin.json` manifests, validating required fields (`id`, `name`, `version`), declared permissions, and exposed tools.
+  - `neron/plugins/loader.py`: `PluginLoader` utilizing Python `importlib.util` for dynamic isolated module loading, locating `PluginBase` subclasses, and instantiation.
+  - `neron/plugins/manager.py`: `PluginManager` providing directory scanning, manifest discovery, dependency validation, lifecycle coordination (`discover`, `load`, `enable`, `disable`, `reload`), and tool registry injection/ejection.
+  - Example Community Plugins:
+    - `plugins/neron_system_monitor/`: System health and threshold monitor exporting `sysmon.check_status` tool.
+    - `plugins/neron_media_controller/`: Desktop media playback automation exporting `media.play_pause` and `media.next` tools.
+  - `tests/test_plugins.py`: 12 new unit and integration tests covering manifest parsing, dynamic loading, lifecycle hooks, tool registry injection, and example plugins.
+
+### Test Suite
+- **112/112 tests passing** (100 previous + 12 new Stage 10 tests, zero regressions).
+
+---
+
 ## [0.5.0-alpha] - 2026-10-09
+
 
 ### Added
 - **Stage 9 — Memory Subsystem (Persistent Facts, Working Scratchpad & Procedural Recipes)**:

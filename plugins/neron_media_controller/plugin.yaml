@@ -1,0 +1,18 @@
+id: "neron-media-controller"
+name: "Media Playback Controller"
+version: "1.0.0"
+author: "Neron Team"
+description: "Controls desktop media playback (play/pause, next track) using simulated media keys."
+min_neron_version: "0.1.0"
+
+permissions:
+  - "computer.keyboard"
+
+tools:
+  - name: "media.play_pause"
+    description: "Toggle play/pause on currently active system media player."
+  - name: "media.next"
+    description: "Skip to next track in system media player."
+
+config:
+  default_player: "system"

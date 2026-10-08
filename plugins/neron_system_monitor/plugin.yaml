@@ -1,0 +1,17 @@
+id: "neron-system-monitor"
+name: "System Monitor Plugin"
+version: "1.0.0"
+author: "Neron Team"
+description: "Monitors system hardware thresholds and reports high resource load warnings."
+min_neron_version: "0.1.0"
+
+permissions:
+  - "system.inspect"
+
+tools:
+  - name: "sysmon.check_status"
+    description: "Evaluates CPU and RAM usage against threshold limits and returns health alerts."
+
+config:
+  cpu_threshold: 85
+  ram_threshold: 90

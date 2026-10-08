@@ -103,10 +103,11 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 
 
 ### Stage 10: Plugin Architecture
-- [ ] Plugin specification and `plugin.json` validator.
-- [ ] Dynamic tool and command injection into runtime registry.
-- [ ] Extension lifecycle controls (`enable`, `disable`, `reload`).
-- [ ] Example community plugins (`spotify`, `vscode`, `system_monitor`).
+- [x] Plugin specification and `plugin.yaml`/`plugin.json` validator (`PluginManifestValidator`).
+- [x] Dynamic tool and command injection into runtime registry (`PluginLoader` and `PluginManager`).
+- [x] Extension lifecycle controls (`discover`, `load`, `enable`, `disable`, `reload`).
+- [x] Example community plugins (`neron-system-monitor`, `neron-media-controller`).
+
 
 ### Stage 11: Modular Online Integrations
 - [ ] Pluggable web search engine (DuckDuckGo, SearXNG, Google).
