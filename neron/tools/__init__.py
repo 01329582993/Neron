@@ -28,6 +28,11 @@ from neron.tools.vision.tools import (
     VisionScreenshotTool,
     VisionTypeTextTool,
 )
+from neron.tools.memory.tools import (
+    MemoryForgetTool,
+    MemoryRecallTool,
+    MemoryRememberTool,
+)
 
 
 def create_default_registry(
@@ -60,6 +65,11 @@ def create_default_registry(
     registry.register(VisionClickElementTool())
     registry.register(VisionTypeTextTool())
 
+    # Register memory tools
+    registry.register(MemoryRememberTool())
+    registry.register(MemoryRecallTool())
+    registry.register(MemoryForgetTool())
+
     return registry
 
 
@@ -74,5 +84,9 @@ __all__ = [
     "VisionFindElementTool",
     "VisionClickElementTool",
     "VisionTypeTextTool",
+    "MemoryRememberTool",
+    "MemoryRecallTool",
+    "MemoryForgetTool",
 ]
+
 

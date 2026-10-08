@@ -30,6 +30,69 @@ class DAGPlanner(BasePlanner):
 
         plan = TaskPlan(goal=clean, state=TaskState.PLANNING)
 
+        # ── Pattern: Procedural Automation Recipes ─────────────────────────
+        recipe_mgr = context.get("recipe_manager")
+        if recipe_mgr:
+            matched_recipe = recipe_mgr.find_matching_recipe(clean)
+            if matched_recipe:
+                steps_data = matched_recipe.get("steps", [])
+                plan.steps = [
+                    PlanStep(
+                        tool_name=s.get("tool_name"),
+                        arguments=s.get("arguments", {}),
+                        description=s.get("description", "Execute recipe step"),
+                        depends_on=s.get("depends_on", []),
+                        is_optional=s.get("is_optional", False),
+                    )
+                    for s in steps_data
+                ]
+                plan.state = TaskState.PENDING
+                return plan
+
+        # ── Pattern: "remember (that) X is Y" ──────────────────────────────
+        rem_match = re.search(r"remember\s+(?:that\s+)?(.+?)\s+is\s+(.+)$", lower)
+        if rem_match:
+            k = rem_match.group(1).strip()
+            v = rem_match.group(2).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="memory.remember",
+                    arguments={"key": k, "value": v},
+                    description=f"Remember that '{k}' is '{v}'",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: "recall X" / "what is my X" ────────────────────────────
+        recall_match = re.search(r"^(?:recall|what\s+is\s+(?:my\s+)?)(.+)$", lower)
+        if recall_match and not any(kw in lower for kw in ["time", "weather", "volume", "cpu", "ram"]):
+            k = recall_match.group(1).strip().rstrip("?")
+            plan.steps = [
+                PlanStep(
+                    tool_name="memory.recall",
+                    arguments={"key": k},
+                    description=f"Recall '{k}' from memory",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: "forget X" ─────────────────────────────────────────────
+        forget_match = re.search(r"^forget\s+(?:that\s+)?(.+)$", lower)
+        if forget_match:
+            k = forget_match.group(1).strip()
+            plan.steps = [
+                PlanStep(
+                    tool_name="memory.forget",
+                    arguments={"key": k},
+                    description=f"Forget '{k}' from memory",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+
         # ── Pattern: "prepare development environment" ─────────────────────
         if "prepare" in lower and "dev" in lower:
             telemetry_step = PlanStep(

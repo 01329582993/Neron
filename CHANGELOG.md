@@ -6,7 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.5.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 9 — Memory Subsystem (Persistent Facts, Working Scratchpad & Procedural Recipes)**:
+  - `neron/memory/sqlite_store.py`: Thread-safe `SQLiteMemoryStore` supporting structured facts (`facts` table with category, key, value, confidence), conversation turns history (`conversation_turns` table), procedural recipes (`recipes` table with usage counters), and SQLite FTS5 full-text search with LIKE fallback.
+  - `neron/memory/working_memory.py`: Volatile in-memory `WorkingMemory` scratchpad managing session state, active goals, plan IDs, context variables (`set_variable`/`get_variable`), and turn history with sliding window eviction.
+  - `neron/memory/recipes.py`: `RecipeManager` enabling registration and natural-language regex pattern matching for multi-step automated task templates.
+  - `neron/memory/manager.py`: Unified `MemoryManager` facade coordinating fact storage, working memory, procedural recipes, and prompt context summarization for LLMs.
+  - `neron/tools/memory/`: 3 new memory tools registered in `ToolRegistry`:
+    - `memory.remember`: stores facts, user preferences, and system parameters
+    - `memory.recall`: retrieves facts by exact key or search query
+    - `memory.forget`: deletes facts from memory
+  - `neron/core/planner/dag_planner.py`: Extended DAG planner to match procedural automation recipes and map natural language statements ("remember that X is Y", "recall X", "forget X") directly into memory tool plans.
+  - `tests/test_memory.py`: 17 new unit and integration tests covering SQLite store, working memory, recipe manager, memory manager, memory tools, and DAG planner expansions.
+
+### Test Suite
+- **100/100 tests passing** (83 previous + 17 new Stage 9 tests, zero regressions).
+
+---
+
 ## [0.4.0-alpha] - 2026-10-09
+
  
 ### Added
 - **Stage 8 — Computer Vision & Screen Reasoning Subsystem**:

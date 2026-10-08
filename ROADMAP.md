@@ -95,11 +95,12 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 
 
 ### Stage 9: Memory Subsystem
-- [ ] SQLite-backed structured persistent memory.
-- [ ] Semantic knowledge indexing with local embeddings.
-- [ ] Working memory session store.
-- [ ] Procedural automation recipe manager.
-- [ ] User memory inspection and deletion UI/CLI.
+- [x] SQLite-backed structured persistent memory (`SQLiteMemoryStore`).
+- [x] Full-text search and knowledge indexing (SQLite FTS5 + LIKE fallback).
+- [x] Working memory session store (`WorkingMemory` volatile scratchpad & variables).
+- [x] Procedural automation recipe manager (`RecipeManager` DAG workflow templates).
+- [x] User memory tools and natural language commands (`memory.remember`, `memory.recall`, `memory.forget`).
+
 
 ### Stage 10: Plugin Architecture
 - [ ] Plugin specification and `plugin.json` validator.
