@@ -1,20 +1,20 @@
-"""NERON Command Line Interface & Interactive Desktop Console."""
+"""NERON Command Line Interface & Interactive Desktop Console — Stage 7."""
+
+from __future__ import annotations
 
 import argparse
 import sys
+import threading
+
 from neron.config.manager import ConfigManager
 from neron.core.agent.base import NeronAgent
+from neron.core.executor.dag_executor import DAGExecutor
+from neron.core.planner.dag_planner import DAGPlanner
 from neron.diagnostics.health import HealthManager
 from neron.security.permissions import SecurityMode
+from neron.ui.console import NeronConsole, RICH_AVAILABLE
 from neron.utils.audit import AuditLedger
 from neron.utils.logger import setup_logging
-
-try:
-    from colorama import Fore, Style
-    COLOR = True
-except ImportError:
-    COLOR = False
-
 
 # Configure standard streams for UTF-8 on Windows
 if sys.platform.startswith("win"):
@@ -27,53 +27,24 @@ if sys.platform.startswith("win"):
         pass
 
 
-def print_banner(agent: NeronAgent) -> None:
-    cyan = Fore.CYAN if COLOR else ""
-    green = Fore.GREEN if COLOR else ""
-    yellow = Fore.YELLOW if COLOR else ""
-    reset = Style.RESET_ALL if COLOR else ""
-
-    telemetry = agent.os_controller.get_telemetry()
-    tools_count = len(agent.tool_registry.list_tools())
-    mode = agent.permission_manager.mode.value
-
-    print(f"{cyan}")
-    print(r"  _   _ _____ ____   ___  _   _ ")
-    print(r" | \ | | ____|  _ \ / _ \| \ | |")
-    print(r" |  \| |  _| | |_) | | | |  \| |")
-    print(r" | |\  | |___|  _ <| |_| | |\  |")
-    print(r" |_| \_|_____|_| \_\\___/|_| \_|")
-    print(f" Modular Local-First Computer Agent{reset}\n")
-
-    print(f" [*] OS:       {telemetry.os_name} {telemetry.os_version}")
-    print(f" [*] CPU/RAM:  {telemetry.cpu_percent}% CPU | {telemetry.memory_percent}% RAM ({telemetry.memory_used_gb}/{telemetry.memory_total_gb} GB)")
-    print(f" [*] Security: {green}{mode}{reset} mode active (Emergency Stop: {yellow}CTRL+ALT+N{reset})")
-    print(f" [*] Registry: {tools_count} built-in tools loaded and verified")
-    print(f" Type {yellow}help{reset} for commands, or describe what you want Neron to do.")
-    print("-" * 65)
-
+# ─────────────────────────────────────────────────────────────────────────────
+# Diagnostics & Audit (plain text, no Rich required)
+# ─────────────────────────────────────────────────────────────────────────────
 
 def run_diagnostics() -> None:
     """Run system diagnostics report."""
-    print("==================================================")
+    print("=" * 50)
     print("           NERON SYSTEM DIAGNOSTICS")
-    print("==================================================")
+    print("=" * 50)
     manager = HealthManager()
     results = manager.run_full_diagnostics()
-
-    green = Fore.GREEN if COLOR else ""
-    yellow = Fore.YELLOW if COLOR else ""
-    red = Fore.RED if COLOR else ""
-    reset = Style.RESET_ALL if COLOR else ""
-
     for res in results:
         if res.status == "HEALTHY":
-            badge = f"{green}[OK HEALTHY]{reset}"
+            badge = "[OK]"
         elif res.status in ("WARNING", "DEGRADED"):
-            badge = f"{yellow}[WARN {res.status}]{reset}"
+            badge = "[WARN]"
         else:
-            badge = f"{red}[FAIL {res.status}]{reset}"
-
+            badge = "[FAIL]"
         print(f"\n{badge} {res.name}")
         print(f"   Details: {res.details}")
         if res.remediation_hint:
@@ -95,50 +66,82 @@ def show_audit_history(limit: int = 20) -> None:
             print(f"   Summary: {ev['result_summary'][:100]}")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Rich REPL
+# ─────────────────────────────────────────────────────────────────────────────
+
 def interactive_repl(agent: NeronAgent) -> None:
-    print_banner(agent)
-    yellow = Fore.YELLOW if COLOR else ""
-    green = Fore.GREEN if COLOR else ""
-    red = Fore.RED if COLOR else ""
-    reset = Style.RESET_ALL if COLOR else ""
+    """Main interactive REPL with Rich console UI and DAG planner/executor."""
+    console = NeronConsole(agent)
+    dag_planner = DAGPlanner()
+    dag_executor = DAGExecutor(
+        tool_registry=agent.tool_registry,
+        event_bus=agent.event_bus,
+        emergency_stop=agent.emergency_stop,
+    )
+
+    console.print_banner()
+
+    # ── Help text ─────────────────────────────────────────────────────────────
+    help_text = """
+[bold cyan]Console Commands:[/bold cyan]
+  [yellow]status[/yellow]         Live system telemetry
+  [yellow]health[/yellow]         Run self-diagnostics
+  [yellow]tools[/yellow]          List all registered tools
+  [yellow]audit[/yellow]          View security audit log
+  [yellow]mode <MODE>[/yellow]    Switch security mode (SAFE / STANDARD / POWER_USER)
+  [yellow]stop[/yellow]           Trigger emergency stop
+  [yellow]reset-stop[/yellow]     Reset emergency stop
+  [yellow]exit[/yellow]           Quit Neron
+
+[bold cyan]Natural Language Examples:[/bold cyan]
+  "what is using all my ram?"
+  "open notepad"
+  "set volume to 40"
+  "prepare development environment"
+  "check system then open chrome"
+  "search for my machine learning project then open it"
+""" if RICH_AVAILABLE else ""
 
     while True:
         try:
-            prompt_str = f"\n{green}neron{reset}> "
-            user_input = input(prompt_str).strip()
+            prompt_str = "\nneron> " if not RICH_AVAILABLE else "\n[bold green]neron[/bold green]> "
+
+            if RICH_AVAILABLE:
+                from rich.console import Console as _RC
+                _c = _RC()
+                _c.print(prompt_str, end="")
+                user_input = input("").strip()
+            else:
+                user_input = input(prompt_str).strip()
+
             if not user_input:
                 continue
 
-            lower = user_input.lower()
+            lower = user_input.lower().strip()
+
+            # ── Built-in commands ─────────────────────────────────────────────
             if lower in ("exit", "quit", "q"):
-                print("Shutting down Neron console. Goodbye.")
+                console.print_info("Shutting down Neron. Goodbye.")
                 break
 
             elif lower == "help":
-                print("\nAvailable Console Commands:")
-                print("  status        - View system telemetry and active window")
-                print("  health        - Run self-diagnostics")
-                print("  tools         - List all registered tools and required capabilities")
-                print("  audit         - View recent security audit log entries")
-                print("  mode <MODE>   - Switch security mode (SAFE, STANDARD, POWER_USER)")
-                print("  stop          - Trigger emergency stop")
-                print("  reset-stop    - Reset emergency stop state")
-                print("  exit / quit   - Exit console")
-                print("\nNatural Language Examples:")
-                print("  'what is using all my ram?'")
-                print("  'open notepad'")
-                print("  'close notepad'")
-                print("  'set volume to 40'")
-                print("  'find my machine learning project'")
-                print("  'create a folder called Research'")
+                if RICH_AVAILABLE:
+                    from rich.console import Console as _RC
+                    _RC().print(help_text)
+                else:
+                    print("Commands: status, health, tools, audit, mode <MODE>, stop, reset-stop, exit")
                 continue
 
             elif lower == "status":
                 t = agent.os_controller.get_telemetry()
                 w = agent.os_controller.get_active_window()
-                print(f"CPU: {t.cpu_percent}% | RAM: {t.memory_used_gb}/{t.memory_total_gb} GB ({t.memory_percent}%) | Disk Free: {t.disk_free_gb} GB")
+                console.print_info(
+                    f"CPU: {t.cpu_percent:.0f}% | RAM: {t.memory_used_gb}/{t.memory_total_gb} GB "
+                    f"({t.memory_percent:.0f}%) | Disk Free: {t.disk_free_gb} GB"
+                )
                 if w:
-                    print(f"Active Window: '{w.title}' (Process: {w.process_name})")
+                    console.print_info(f"Active Window: '{w.title}' (Process: {w.process_name})")
                 continue
 
             elif lower == "health":
@@ -147,10 +150,10 @@ def interactive_repl(agent: NeronAgent) -> None:
 
             elif lower == "tools":
                 tools = agent.tool_registry.list_tools()
-                print(f"\nRegistered Tools ({len(tools)}):")
+                console.print_info(f"Registered Tools ({len(tools)}):")
                 for t in tools:
                     caps = ", ".join(t.required_capabilities)
-                    print(f"  • {yellow}{t.name:<22}{reset} [{caps}] - {t.description}")
+                    console.print_info(f"  • {t.name:<22} [{caps}] — {t.description}")
                 continue
 
             elif lower == "audit":
@@ -162,55 +165,81 @@ def interactive_repl(agent: NeronAgent) -> None:
                 try:
                     new_mode = SecurityMode(mode_str)
                     agent.permission_manager.set_mode(new_mode)
-                    print(f"Security mode updated to {green}{new_mode.value}{reset}")
+                    console.print_response(f"Security mode updated to [bold]{new_mode.value}[/bold]")
                 except ValueError:
-                    print(f"{red}Invalid mode. Choose from: SAFE, STANDARD, POWER_USER, CUSTOM{reset}")
+                    console.print_error("Invalid mode. Choose: SAFE, STANDARD, POWER_USER, CUSTOM")
                 continue
 
             elif lower == "stop":
                 agent.stop("User invoked stop command from console")
-                print(f"{red}Emergency stop triggered! Active operations cancelled.{reset}")
+                console.print_error("Emergency stop triggered! Active operations cancelled.")
                 continue
 
             elif lower == "reset-stop":
                 agent.reset_stop()
-                print("Emergency stop reset. System ready.")
+                console.print_response("Emergency stop reset. System ready.")
                 continue
 
-            # Process Goal
-            print(f"[*] Processing goal: '{user_input}'...")
-            plan = agent.run_goal(user_input)
+            # ── Natural Language Goal ─────────────────────────────────────────
+            console.print_info(f"Processing: '{user_input}'")
 
-            state_color = green if plan.state.value == "COMPLETED" else red
-            print(f"\nTask Result: {state_color}{plan.state.value}{reset}")
-            for idx, step in enumerate(plan.steps):
-                step_badge = "[OK]" if step.state.value == "COMPLETED" else "[X]"
-                print(f"  {step_badge} Step {idx + 1}: {step.description} ({step.duration_ms:.1f}ms)")
-                if step.error:
-                    print(f"      {red}Error: {step.error}{reset}")
-                elif step.result is not None:
-                    # Compact result print
-                    res_str = str(step.result)
-                    if len(res_str) > 120:
-                        res_str = res_str[:120] + "..."
-                    print(f"      Result: {res_str}")
+            # Build plan using DAGPlanner
+            context = {"platform": sys.platform}
+            plan = dag_planner.plan(
+                goal=user_input,
+                context=context,
+                available_tools=agent.tool_registry.list_tools(),
+            )
+            console.record_plan(plan)
+
+            # Execute with DAGExecutor
+            result_plan = dag_executor.execute_plan(plan)
+            console.clear_active()
+
+            # Print rich summary
+            console.print_plan_summary(result_plan)
+
+            # Extract and print the most relevant result
+            if result_plan.state.value == "COMPLETED":
+                for step in result_plan.steps:
+                    if step.result is not None:
+                        res_str = str(step.result)
+                        if len(res_str) > 300:
+                            res_str = res_str[:300] + "…"
+                        console.print_response(res_str)
+                        console.record_response(res_str)
+            else:
+                if result_plan.error:
+                    console.print_error(f"Plan failed: {result_plan.error}")
+                for step in result_plan.steps:
+                    if step.failure_analysis:
+                        console.print_error(
+                            f"[{step.failure_analysis.mode.value}] {step.failure_analysis.recovery_suggestion}"
+                        )
 
         except (KeyboardInterrupt, EOFError):
-            print("\nInterrupt received. Exiting...")
+            console.print_info("\nInterrupt received. Exiting.")
             break
         except Exception as e:
-            print(f"{red}Error: {e}{reset}")
+            console.print_error(f"Unexpected error: {e}")
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI Entry Point
+# ─────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="NERON — Modular Local-First Computer Agent")
     parser.add_argument("--diagnose", action="store_true", help="Run system diagnostics and exit")
     parser.add_argument("--audit-history", action="store_true", help="Display recent security audit log")
-    parser.add_argument("--security", type=str, choices=["SAFE", "STANDARD", "POWER_USER", "CUSTOM"], help="Set security mode")
+    parser.add_argument(
+        "--security", type=str,
+        choices=["SAFE", "STANDARD", "POWER_USER", "CUSTOM"],
+        help="Set security mode",
+    )
     parser.add_argument("-g", "--goal", type=str, help="Execute a goal directly and exit")
     args = parser.parse_args()
 
-    # Initialize logging
     setup_logging()
 
     if args.diagnose:
@@ -221,7 +250,6 @@ def main() -> None:
         show_audit_history()
         return
 
-    # Initialize Agent
     cfg_mgr = ConfigManager()
     if args.security:
         cfg_mgr.config.security.profile = args.security
@@ -229,10 +257,18 @@ def main() -> None:
     agent = NeronAgent(config_manager=cfg_mgr)
 
     if args.goal:
-        print(f"Executing goal: '{args.goal}'")
-        plan = agent.run_goal(args.goal)
-        print(f"Status: {plan.state.value}")
-        sys.exit(0 if plan.state.value == "COMPLETED" else 1)
+        console = NeronConsole(agent)
+        dag_planner = DAGPlanner()
+        dag_executor = DAGExecutor(
+            tool_registry=agent.tool_registry,
+            event_bus=agent.event_bus,
+            emergency_stop=agent.emergency_stop,
+        )
+        context = {"platform": sys.platform}
+        plan = dag_planner.plan(goal=args.goal, context=context, available_tools=agent.tool_registry.list_tools())
+        result = dag_executor.execute_plan(plan)
+        console.print_plan_summary(result)
+        sys.exit(0 if result.state.value == "COMPLETED" else 1)
 
     interactive_repl(agent)
 

@@ -14,8 +14,8 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **3** | **Basic PC Tools** | Filesystem search/read/write, terminal command executor, system volume, app launcher, verification hooks | ✅ **Complete** |
 | **4** | **Local LLM Integration** | `LLMProvider` abstraction, Ollama & llama.cpp connectors, offline-first fallback router | ✅ **Complete** |
 | **5** | **Voice Pipeline** | Modular VAD, wake-word engine ("Hey Neron"), Whisper STT, Piper/System TTS | ✅ **Complete** |
-| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | 🚀 **In Progress** |
-| **7** | **Desktop Operating Console & UI** | Desktop console, system tray integration, active task monitor, permission approval UI | 📋 Planned |
+| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | ✅ **Complete** |
+| **7** | **Desktop Operating Console & UI** | Rich terminal console, active task monitor, plan step breakdown, failure hints | ✅ **Complete** |
 | **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | 📋 Planned |
 | **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | 📋 Planned |
 | **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | 📋 Planned |
