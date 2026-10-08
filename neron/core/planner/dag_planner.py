@@ -111,6 +111,46 @@ class DAGPlanner(BasePlanner):
             plan.state = TaskState.PENDING
             return plan
 
+        # ── Pattern: "click X then type Y" ─────────────────────────────────
+        click_type = re.search(r"click\s+(?:on\s+)?(?:the\s+)?(.+?)\s+(?:then|and)\s+type\s+['\"]?(.+?)['\"]?$", lower)
+        if click_type:
+            target = click_type.group(1).strip()
+            text_to_type = click_type.group(2).strip()
+            click_step = PlanStep(
+                tool_name="vision.click_element",
+                arguments={"description": target},
+                description=f"Click target '{target}'",
+            )
+            type_step = PlanStep(
+                tool_name="vision.type_text",
+                arguments={"text": text_to_type, "press_enter": True},
+                description=f"Type '{text_to_type}'",
+                depends_on=[click_step.step_id],
+            )
+            plan.steps = [click_step, type_step]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: "click (on) the X (button)" ───────────────────────────
+        click_match = re.search(r"^click\s+(?:on\s+)?(?:the\s+)?(.+)", lower)
+        if click_match and "then" not in lower and "and" not in lower:
+            target = click_match.group(1).strip()
+            find_step = PlanStep(
+                tool_name="vision.find_element",
+                arguments={"description": target},
+                description=f"Locate '{target}' visually on screen",
+            )
+            click_step = PlanStep(
+                tool_name="vision.click_element",
+                arguments={"description": target},
+                description=f"Click '{target}'",
+                depends_on=[find_step.step_id],
+            )
+            plan.steps = [find_step, click_step]
+            plan.state = TaskState.PENDING
+            return plan
+
+
         # ── Fallback: single-step via heuristics ───────────────────────────
         plan = self._heuristic_single_step(clean, lower, context)
         return plan
@@ -150,6 +190,25 @@ class DAGPlanner(BasePlanner):
         if close_match and "folder" not in lower and "file" not in lower:
             app = re.sub(r"\b(app|application|please)\b", "", close_match.group(1)).strip()
             plan.steps.append(PlanStep(tool_name="system.close_app", arguments={"app_name": app}, description=f"Close '{app}'"))
+            plan.state = TaskState.PENDING
+            return plan
+
+        if any(kw in lower for kw in ["screenshot", "capture screen", "screen capture", "take screenshot"]):
+            plan.steps.append(PlanStep(tool_name="vision.screenshot", arguments={}, description="Capture desktop screenshot"))
+            plan.state = TaskState.PENDING
+            return plan
+
+        type_match = re.search(r"^type\s+['\"]?(.+?)['\"]?$", lower)
+        if type_match:
+            text_str = type_match.group(1).strip()
+            plan.steps.append(PlanStep(tool_name="vision.type_text", arguments={"text": text_str}, description=f"Type '{text_str}'"))
+            plan.state = TaskState.PENDING
+            return plan
+
+        if "on screen" in lower and any(kw in lower for kw in ["find", "search", "locate"]):
+            query = re.sub(r"^(?:hey\s+neron,?\s*)?(?:find|search(?:\s+for)?|where\s+is|locate)\s+", "", lower)
+            query = re.sub(r"\s+on\s+screen.*$", "", query).strip()
+            plan.steps.append(PlanStep(tool_name="vision.find_element", arguments={"description": query}, description=f"Locate '{query}' on screen"))
             plan.state = TaskState.PENDING
             return plan
 

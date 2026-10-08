@@ -22,6 +22,12 @@ from neron.tools.system.tools import (
     SystemVolumeTool,
 )
 from neron.tools.terminal.tools import TerminalExecuteTool
+from neron.tools.vision.tools import (
+    VisionClickElementTool,
+    VisionFindElementTool,
+    VisionScreenshotTool,
+    VisionTypeTextTool,
+)
 
 
 def create_default_registry(
@@ -48,6 +54,12 @@ def create_default_registry(
     registry.register(SystemCloseAppTool(os_controller=ctrl))
     registry.register(SystemVolumeTool(os_controller=ctrl))
 
+    # Register computer vision tools
+    registry.register(VisionScreenshotTool())
+    registry.register(VisionFindElementTool())
+    registry.register(VisionClickElementTool())
+    registry.register(VisionTypeTextTool())
+
     return registry
 
 
@@ -58,4 +70,9 @@ __all__ = [
     "ToolNotFoundError",
     "ToolValidationError",
     "create_default_registry",
+    "VisionScreenshotTool",
+    "VisionFindElementTool",
+    "VisionClickElementTool",
+    "VisionTypeTextTool",
 ]
+

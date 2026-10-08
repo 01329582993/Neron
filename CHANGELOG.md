@@ -6,7 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.4.0-alpha] - 2026-10-09
+ 
+### Added
+- **Stage 8 — Computer Vision & Screen Reasoning Subsystem**:
+  - `neron/vision/capture.py`: `ScreenCapture` engine supporting fast multi-monitor screenshot capture via MSS with seamless Pillow `ImageGrab` fallback and mock/headless testing injection.
+  - `neron/vision/analyzer.py`: `ScreenAnalyzer` utilizing OpenCV for normalized cross-correlation template matching, non-maximum suppression (NMS) duplicate elimination, low-variance/flat image handling via `TM_SQDIFF`, UI element contour detection (buttons, text inputs, panels), and HSV color region extraction.
+  - `neron/vision/locator.py`: `ElementLocator` mapping natural language spatial descriptions ("bottom right", "top left", "center") and image templates into precise pixel click coordinates with `ElementNotFoundError` handling.
+  - `neron/vision/coordinator.py`: `VisionCoordinator` tying together screen capture, OpenCV visual analysis, locator, and native desktop mouse/keyboard drivers.
+  - `neron/tools/vision/`: Registered 4 new capability-gated vision tools:
+    - `vision.screenshot` (Capability: `computer.screen`)
+    - `vision.find_element` (Capability: `computer.screen`)
+    - `vision.click_element` (Capability: `computer.mouse`)
+    - `vision.type_text` (Capability: `computer.keyboard`)
+  - `neron/core/planner/dag_planner.py`: Extended DAG planner with visual reasoning workflows:
+    - Multi-step click-then-type pipelines (`vision.click_element` → `vision.type_text`)
+    - Visual click workflows (`vision.find_element` → `vision.click_element`)
+    - Single-step screenshot, typing, and on-screen element search
+  - `tests/test_vision.py`: 19 new unit and integration tests covering capture, analyzer, locator, coordinator, tools, and DAG planner.
+
+### Test Suite
+- **83/83 tests passing** (64 previous + 19 new Stage 8 tests, zero regressions).
+
+---
+
 ## [0.3.0-alpha] - 2026-10-09
+
 
 ### Added
 - **Stage 6 — DAG Task Planning & Execution Engine**:

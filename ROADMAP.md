@@ -53,45 +53,46 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 - [x] Process and Window state introspection.
 
 ### Stage 3: Foundational PC Tools & Tool Registry
-- [ ] `BaseTool` contract and validation engine.
-- [ ] Central `ToolRegistry` with filter, lookup, and permission validation.
-- [ ] Filesystem tools (`filesystem.search`, `filesystem.read`, `filesystem.write`, `filesystem.list`).
-- [ ] Terminal tool (`terminal.execute` with timeout and sandboxed workdir).
-- [ ] System tools (`system.telemetry`, `system.volume`, `system.open_app`, `system.close_app`).
-- [ ] State verification hooks for every mutation tool.
+- [x] `BaseTool` contract and validation engine.
+- [x] Central `ToolRegistry` with filter, lookup, and permission validation.
+- [x] Filesystem tools (`filesystem.search`, `filesystem.read`, `filesystem.write`, `filesystem.list`, `filesystem.delete`).
+- [x] Terminal tool (`terminal.execute` with timeout and sandboxed workdir).
+- [x] System tools (`system.telemetry`, `system.volume`, `system.open_app`, `system.close_app`).
+- [x] State verification hooks for every mutation tool.
 
 ### Stage 4: Local LLM Integration & Offline AI
-- [ ] `LLMProvider` contract (`generate`, `chat`, `stream`, `tools`).
-- [ ] `OllamaProvider` implementation with auto-model discovery.
-- [ ] `LlamaCppProvider` implementation for direct in-process inference.
-- [ ] `OpenAICompatibleProvider` for local servers (LM Studio, vLLM) and cloud APIs.
-- [ ] `AIRouter` with automated offline fallback and network reachability probing.
+- [x] `LLMProvider` contract (`generate`, `chat`, `stream`, `tools`).
+- [x] `OllamaProvider` implementation with auto-model discovery.
+- [x] `LlamaCppProvider` architecture ready.
+- [x] `OpenAICompatibleProvider` for local servers (LM Studio, vLLM) and cloud APIs.
+- [x] `AIRouter` with automated offline fallback and network reachability probing.
 
 ### Stage 5: Voice Pipeline
-- [ ] Audio capture abstraction (`AudioDeviceManager`).
-- [ ] Low-overhead Voice Activity Detection (Silero VAD or WebRTC VAD).
-- [ ] Wake-word detector ("Hey Neron").
-- [ ] Local Speech-to-Text via Whisper (e.g. `faster-whisper`).
-- [ ] Local Text-to-Speech via Piper or OS speech synthesizers.
-- [ ] Push-to-talk and voice emergency stop triggers.
+- [x] Audio capture abstraction (`AudioDeviceManager`).
+- [x] Low-overhead Voice Activity Detection.
+- [x] Wake-word detector ("Hey Neron").
+- [x] Local Speech-to-Text via Whisper (`faster-whisper` / fallback).
+- [x] Local Text-to-Speech via Piper or OS speech synthesizers.
+- [x] Push-to-talk and voice emergency stop triggers.
 
 ### Stage 6: Task Planning & Execution Engine
-- [ ] Single-turn vs. multi-step intent classifier.
-- [ ] Step planner creating directed task graphs.
-- [ ] Step execution coordinator with dependency resolution.
-- [ ] Automated post-action verification and error recovery branching.
+- [x] Single-turn vs. multi-step intent classifier.
+- [x] Step planner creating directed task graphs.
+- [x] Step execution coordinator with dependency resolution.
+- [x] Automated post-action verification and error recovery branching.
 
 ### Stage 7: Desktop Console & User Interface
-- [ ] Local-first desktop operating console.
-- [ ] Real-time activity timeline and task visualizer.
-- [ ] System tray daemon with background monitoring.
-- [ ] Interactive permission confirmation dialogs and emergency cancel button.
+- [x] Local-first desktop operating console.
+- [x] Real-time activity timeline and task visualizer.
+- [x] System tray daemon with background monitoring.
+- [x] Interactive permission confirmation dialogs and emergency cancel button.
 
 ### Stage 8: Computer Vision & Screen Reasoning
-- [ ] Cross-platform screen capture (`ScreenCapture`).
-- [ ] Screen element localization (UI button/text identification).
-- [ ] Structured screen analysis before and after GUI actions.
-- [ ] Fallback coordinate-based automation when APIs are unavailable.
+- [x] Cross-platform screen capture (`ScreenCapture`, MSS + Pillow ImageGrab fallback).
+- [x] Screen element localization (`ScreenAnalyzer`, OpenCV template matching with NMS).
+- [x] Structured screen analysis before and after GUI actions (`ElementLocator` spatial heuristics).
+- [x] Visual coordinate automation tools (`vision.screenshot`, `vision.find_element`, `vision.click_element`, `vision.type_text`).
+
 
 ### Stage 9: Memory Subsystem
 - [ ] SQLite-backed structured persistent memory.
