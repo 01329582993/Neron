@@ -59,8 +59,8 @@ class BackupManager:
             The unique backup_id string.
         """
         ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        sub_id = int(time.time() * 1000) % 10000
-        backup_id = f"backup_{ts}_{sub_id:04d}"
+        sub_id = time.time_ns() % 1_000_000   # microsecond uniqueness — 6 digits
+        backup_id = f"backup_{ts}_{sub_id:06d}"
         dest_dir = self.backup_root / backup_id
         dest_dir.mkdir(parents=True, exist_ok=True)
 

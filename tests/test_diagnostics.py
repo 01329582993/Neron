@@ -54,6 +54,41 @@ def manager():
     return HealthManager()
 
 
+@pytest.fixture(autouse=True)
+def _no_real_network(request, monkeypatch):
+    """Prevent any test from making real network calls.
+
+    Patches the two methods that perform live I/O (Ollama HTTP request and
+    DNS socket probes) so the suite completes in seconds rather than waiting
+    on connection timeouts.
+
+    Tests decorated with ``@pytest.mark.uses_real_network`` (i.e. those that
+    do their own patching at the requests/socket level) are exempt.
+    """
+    if request.node.get_closest_marker("uses_real_network"):
+        return  # let the test manage its own patching
+
+    _ai_result = HealthCheckResult(
+        name="Local AI Endpoint (Ollama)",
+        status=STATUS_DEGRADED,
+        details="Mocked — no real Ollama server in test environment.",
+        remediation_hint="Start Ollama with 'ollama serve'.",
+    )
+    _net_result = HealthCheckResult(
+        name="Network Latency",
+        status=STATUS_HEALTHY,
+        details="Mocked — avg latency 5.0 ms (stub).",
+    )
+    monkeypatch.setattr(
+        "neron.diagnostics.health.HealthManager.check_local_ai_endpoint",
+        lambda self: _ai_result,
+    )
+    monkeypatch.setattr(
+        "neron.diagnostics.health.HealthManager.check_network_latency",
+        lambda self: _net_result,
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # HealthCheckResult
 # ─────────────────────────────────────────────────────────────────────────────
@@ -346,6 +381,7 @@ class TestCheckHardwareCapabilities:
 # Local AI endpoint check
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.uses_real_network
 class TestCheckLocalAiEndpoint:
     def test_healthy_with_models(self, manager):
         mock_resp = MagicMock()
@@ -394,6 +430,7 @@ class TestCheckLocalAiEndpoint:
 # Network latency check
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.uses_real_network
 class TestCheckNetworkLatency:
     def _make_mock_socket(self, latency_ms: float):
         """Return a mock socket.create_connection that measures fake latency."""

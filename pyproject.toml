@@ -71,3 +71,6 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --strict-markers"
+markers = [
+    "uses_real_network: test patches network calls at the requests/socket level and must not be intercepted by the autouse network stub",
+]
