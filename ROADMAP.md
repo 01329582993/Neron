@@ -22,7 +22,7 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | ✅ **Complete** |
 | **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | ✅ **Complete** |
 | **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | ✅ **Complete** |
-| **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | 📋 Planned |
+| **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | ✅ **Complete** |
 | **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | 📋 Planned |
 
 ---
@@ -129,10 +129,10 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 - [x] Plugin scaffolding generator (`neron plugin create <name>`).
 
 ### Stage 14: Sandboxed Self-Update Pipeline
-- [ ] Isolated staging workspace creator (`.neron/staging/`).
-- [ ] Pre-deployment validation gate (lint + unit test + integration test).
-- [ ] User-approval changelog modal.
-- [ ] Atomic switch and automated rollback on failure.
+- [x] Isolated staging workspace creator (`.neron/staging/`).
+- [x] Pre-deployment validation gate (lint + unit test + integration test).
+- [x] User-approval changelog modal.
+- [x] Atomic switch and automated rollback on failure.
 
 ### Stage 15: Cross-Platform Packaging & Distribution
 - [ ] Windows PyInstaller / InnoSetup packaging.

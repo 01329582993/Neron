@@ -2,8 +2,11 @@
 
 from neron.tools.developer.tools import (
     DevCreatePluginScaffoldTool,
+    DevDeployStagedTool,
     DevInspectSourceTool,
+    DevRollbackTool,
     DevRunTestsTool,
+    DevStagePatchTool,
     DevValidateCodeTool,
 )
 
@@ -12,4 +15,7 @@ __all__ = [
     "DevRunTestsTool",
     "DevValidateCodeTool",
     "DevCreatePluginScaffoldTool",
+    "DevStagePatchTool",
+    "DevDeployStagedTool",
+    "DevRollbackTool",
 ]

@@ -208,6 +208,32 @@ class DAGPlanner(BasePlanner):
             plan.state = TaskState.PENDING
             return plan
 
+        # ── Pattern: Deploy Staged Self-Update (Stage 14) ──────────────────
+        if any(kw in lower for kw in ["deploy staged", "apply staged", "deploy update", "deploy self-update", "apply update"]):
+            plan.steps = [
+                PlanStep(
+                    tool_name="dev.deploy_staged",
+                    arguments={"auto_rollback": True},
+                    description="Atomically deploy validated staged modifications",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
+        # ── Pattern: Rollback Self-Update (Stage 14) ───────────────────────
+        if any(kw in lower for kw in ["rollback update", "revert update", "rollback to checkpoint", "undo update"]):
+            rb_match = re.search(r"checkpoint\s+([\w\.-]+)", lower)
+            backup_id_arg = rb_match.group(1).strip() if rb_match else None
+            plan.steps = [
+                PlanStep(
+                    tool_name="dev.rollback",
+                    arguments={"backup_id": backup_id_arg} if backup_id_arg else {},
+                    description=f"Rollback to previous checkpoint{f' {backup_id_arg}' if backup_id_arg else ''}",
+                )
+            ]
+            plan.state = TaskState.PENDING
+            return plan
+
         # ── Pattern: "prepare development environment" ─────────────────────
 
         if "prepare" in lower and "dev" in lower:

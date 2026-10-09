@@ -4,6 +4,30 @@ All notable changes to the Neron platform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0-alpha] - 2026-10-09
+
+### Added
+- **Stage 14 — Sandboxed Self-Update Pipeline & Automated Rollback**:
+  - `neron/developer/staging.py`:
+    - `StagingWorkspace`: Isolated staging sandbox creator (`.neron/staging/workspace/`) with stage management, unified diff generation against production, and clean reset.
+  - `neron/developer/backup.py`:
+    - `BackupManager`: Timestamped backup snapshot creator in `.neron/backups/<backup_id>/` with metadata serialization, file inventory, newest-first listing, and one-click restoration.
+  - `neron/developer/validator.py`:
+    - `ValidationGate`: Pre-deployment verification gate checking Python AST syntax errors, security violations / protected system paths, and executing automated test suites via `TestRunner`.
+  - `neron/developer/updater.py`:
+    - `SelfUpdatePipeline`: Full Development Loop orchestrator coordinating staging, pre-deployment validation, atomic copy to production tree, post-deployment runtime health checks with `HealthManager`, and automated instant rollback on failure.
+  - `neron/tools/developer/`:
+    - `dev.stage_patch`: Stages proposed code changes into the isolated `.neron/staging/` workspace.
+    - `dev.deploy_staged`: Atomically deploys staged modifications after pre-deployment validation and creates an instant backup checkpoint.
+    - `dev.rollback`: Instantly restores the production workspace from a previous backup snapshot.
+  - Registered all self-update tools in default `ToolRegistry` and wired natural language intents in `DAGPlanner`.
+  - `tests/test_updater.py`: 25 comprehensive unit and integration tests covering staging, snapshot backups, pre-deployment gate, atomic deployment, health-check triggered auto-rollback, and DAG planning.
+
+### Test Suite
+- **279/279 tests passing** (254 previous + 25 new Stage 14 tests, zero regressions).
+
+---
+
 ## [0.9.0-alpha] - 2026-10-09
 
 ### Added
