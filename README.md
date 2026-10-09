@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
 [![Status](https://img.shields.io/badge/status-v1.0.0--rc1%20%7C%20Stages%200--15%20Complete-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/tests-293%20passed%20%2F%200%20failed-success.svg)]()
+[![Tests](https://img.shields.io/badge/tests-304%20passed%20%2F%200%20failed-success.svg)]()
 
 > **Neron** is an extensible, local-first AI computer agent and personal operating layer capable of understanding natural language and voice commands, observing desktop screens, controlling applications, managing files, orchestrating system tasks, and evolving safely through a sandboxed self-development loop.
 
@@ -14,7 +14,10 @@
 
 1. **Local-First by Default**: Core planning, tool execution, memory, and local inference (e.g., via Ollama, llama.cpp) operate entirely offline. Internet access enhances capability (cloud LLMs, web search, browser automation) but is never a hard dependency.
 2. **Transparent Permission Engine**: No opaque or unrestricted automation. Every computer action declares required permissions (`filesystem.read`, `terminal.execute`, `computer.mouse`, `system.admin`, etc.). The user chooses their governance mode (`SAFE`, `STANDARD`, `POWER_USER`, or `CUSTOM`) with real-time prompt verification for sensitive operations.
-3. **Emergency Stop (`CTRL+ALT+N`)**: Immediate, hard cancellation of active automation runs at both keyboard hook and software levels.
+3. **Instant Activation & Emergency Controls**:
+   - **Global Wake Hotkey (`SHIFT+L`)**: Instantly awakens Neron, restores the console, and readies command input from anywhere in Windows.
+   - **Voice Wake-Word ('Hey Neron' or 'Neron')**: Continuously listens via microphone in the background to awaken on your voice.
+   - **Emergency Stop (`CTRL+ALT+N`)**: Immediate, hard cancellation of active automation runs at both keyboard hook and software levels.
 4. **Clean OS Abstraction**: Core decision logic never hard-codes platform semantics. An `OSController` abstraction isolates Windows, Linux, and macOS implementations.
 5. **Separation of Planning and Execution**: Tasks pass through an explicit Directed Acyclic Graph (`DAGPlanner` → `DAGExecutor`) with multi-step validation, automatic retries, and rollback capabilities.
 6. **Action Verification**: Neron never assumes execution succeeded; it actively verifies environmental state (process lists, window titles, file existence, visual OCR checks).
@@ -154,6 +157,25 @@ python -m neron --inspect neron.core.planner.dag_planner
 Generate a production-ready plugin scaffold with `plugin.yaml`, tool implementations, and test stubs:
 ```bash
 python -m neron plugin create my_custom_tool --desc "Custom automated workflow" --tool custom.run
+```
+
+### 8. Background Daemon Listening Mode (Shift+L & Voice Wake)
+Run Neron silently as a desktop daemon waiting for global hotkey `Shift + L` or voice wake ("Hey Neron"):
+```bash
+python -m neron --listen
+```
+
+### 9. Windows Autostart on Boot
+Configure Neron to launch automatically in the background whenever Windows boots or logs in:
+```bash
+# Enable auto-start on Windows boot
+python -m neron autostart enable
+
+# Check current auto-start status
+python -m neron autostart status
+
+# Disable auto-start
+python -m neron autostart disable
 ```
 
 ---

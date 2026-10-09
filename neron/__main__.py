@@ -51,11 +51,81 @@ def show_audit_history(limit: int = 20) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Rich REPL
+# Rich REPL & Daemon Listening Mode
 # ─────────────────────────────────────────────────────────────────────────────
 
+def run_listening_daemon(agent: NeronAgent) -> None:
+    """Run Neron in background daemon listening mode waiting for Shift+L or voice wake."""
+    from neron.core.activation import ActivationCoordinator
+    dag_planner = DAGPlanner()
+    dag_executor = DAGExecutor(
+        tool_registry=agent.tool_registry,
+        event_bus=agent.event_bus,
+        emergency_stop=agent.emergency_stop,
+    )
+
+    active_event = threading.Event()
+    last_trigger = ["hotkey"]
+
+    def on_activate(source: str):
+        last_trigger[0] = source
+        active_event.set()
+
+    coordinator = ActivationCoordinator(
+        config_manager=agent.config_manager,
+        on_activate=on_activate,
+        enable_tts_feedback=True,
+    )
+    coordinator.start()
+
+    print("\n" + "=" * 62)
+    print("  🧠 NERON BACKGROUND DAEMON ACTIVE")
+    print("=" * 62)
+    print("  ⚡ Hotkey Activation : Press [SHIFT + L]")
+    print("  🎤 Voice Activation  : Say 'Hey Neron' or 'Neron'")
+    print("  🛑 Emergency Stop    : Press [CTRL + ALT + N]")
+    print("  Press Ctrl+C to stop listening.")
+    print("=" * 62 + "\n")
+
+    try:
+        while True:
+            # Wait until user triggers via Shift+L or 'Hey Neron'
+            active_event.wait()
+            active_event.clear()
+
+            trigger = last_trigger[0]
+            print(f"\n[⚡] Neron activated via {trigger.upper()}! Listening for command...")
+            try:
+                user_cmd = input("neron> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                break
+
+            if not user_cmd:
+                continue
+
+            if user_cmd.lower() in ("exit", "quit", "stop", "dismiss"):
+                print("Returning to background listener...")
+                continue
+
+            # Execute plan
+            context = {"platform": sys.platform}
+            plan = dag_planner.plan(goal=user_cmd, context=context, available_tools=agent.tool_registry.list_tools())
+            res = dag_executor.execute_plan(plan)
+            print(f"Result: {res.state.value} ({len(res.steps)} steps)")
+            for s in res.steps:
+                if s.result:
+                    print(f"  -> {str(s.result)[:150]}")
+
+    except KeyboardInterrupt:
+        print("\nDaemon terminated by user.")
+    finally:
+        coordinator.stop()
+
+
 def interactive_repl(agent: NeronAgent) -> None:
-    """Main interactive REPL with Rich console UI and DAG planner/executor."""
+    """Main interactive REPL with Rich console UI, DAG planner/executor, and Shift+L hotkey/voice listening."""
+    from neron.core.activation import ActivationCoordinator
+
     console = NeronConsole(agent)
     dag_planner = DAGPlanner()
     dag_executor = DAGExecutor(
@@ -65,6 +135,10 @@ def interactive_repl(agent: NeronAgent) -> None:
     )
 
     console.print_banner()
+
+    # Start background Shift+L and voice listeners while console is active
+    coordinator = ActivationCoordinator(config_manager=agent.config_manager)
+    coordinator.start()
 
     # ── Help text ─────────────────────────────────────────────────────────────
     help_text = """
@@ -213,6 +287,29 @@ def interactive_repl(agent: NeronAgent) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    # ── Handle 'neron autostart' subcommand ─────────────────────────────────────
+    if len(sys.argv) > 1 and sys.argv[1] == "autostart":
+        from neron.os.windows.autostart import WindowsAutostart
+        autostart = WindowsAutostart()
+        action = sys.argv[2] if len(sys.argv) > 2 else "status"
+        if action == "enable":
+            ok = autostart.enable()
+            print(f"[*] Windows Autostart: {'ENABLED' if ok else 'FAILED'}")
+            print(f"    Startup shortcut created at: {autostart.get_launcher_path()}")
+            sys.exit(0 if ok else 1)
+        elif action == "disable":
+            ok = autostart.disable()
+            print(f"[*] Windows Autostart: {'DISABLED' if ok else 'FAILED'}")
+            sys.exit(0 if ok else 1)
+        elif action == "status":
+            enabled = autostart.is_enabled()
+            print(f"[*] Windows Autostart: {'ENABLED' if enabled else 'DISABLED'}")
+            print(f"    Path: {autostart.get_launcher_path()}")
+            sys.exit(0)
+        else:
+            print("Usage: neron autostart [enable | disable | status]")
+            sys.exit(1)
+
     # ── Handle 'neron plugin create <name>' subcommand ─────────────────────────
     if len(sys.argv) > 1 and sys.argv[1] == "plugin":
         sub_parser = argparse.ArgumentParser(prog="neron plugin", description="Neron plugin management")
@@ -244,6 +341,8 @@ def main() -> None:
     parser.add_argument("--audit-history", action="store_true", help="Display recent security audit log")
     parser.add_argument("--test", nargs="?", const="all", help="Run automated test suite (optionally specify test target)")
     parser.add_argument("--inspect", type=str, help="Inspect source structure of a module or file")
+    parser.add_argument("--listen", action="store_true", help="Run in background daemon listening mode (Shift+L / Voice wake)")
+    parser.add_argument("--autostart", choices=["enable", "disable", "status"], help="Configure Windows startup auto-launch")
     parser.add_argument(
         "--security", type=str,
         choices=["SAFE", "STANDARD", "POWER_USER", "CUSTOM"],
@@ -303,6 +402,26 @@ def main() -> None:
         cfg_mgr.config.security.profile = args.security
 
     agent = NeronAgent(config_manager=cfg_mgr)
+
+    if args.autostart:
+        from neron.os.windows.autostart import WindowsAutostart
+        autostart = WindowsAutostart()
+        if args.autostart == "enable":
+            ok = autostart.enable()
+            print(f"[*] Windows Autostart: {'ENABLED' if ok else 'FAILED'}")
+            print(f"    Launcher created at: {autostart.get_launcher_path()}")
+        elif args.autostart == "disable":
+            ok = autostart.disable()
+            print(f"[*] Windows Autostart: {'DISABLED' if ok else 'FAILED'}")
+        elif args.autostart == "status":
+            enabled = autostart.is_enabled()
+            print(f"[*] Windows Autostart: {'ENABLED' if enabled else 'DISABLED'}")
+            print(f"    Path: {autostart.get_launcher_path()}")
+        return
+
+    if args.listen:
+        run_listening_daemon(agent)
+        return
 
     if args.goal:
         console = NeronConsole(agent)

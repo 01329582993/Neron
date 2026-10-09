@@ -12,12 +12,14 @@ class SystemConfig:
     logs_dir: str = "logs"
     log_level: str = "INFO"
     audit_db_path: str = "data/audit.db"
+    autostart_on_boot: bool = False
 
 
 @dataclass
 class SecurityConfig:
     profile: str = "STANDARD"  # SAFE, STANDARD, POWER_USER, CUSTOM
     emergency_stop_shortcut: str = "ctrl+alt+n"
+    activation_shortcut: str = "shift+l"
     custom_policies: Dict[str, bool] = field(default_factory=dict)
 
 
@@ -50,6 +52,8 @@ class AIConfig:
 class VoiceConfig:
     enabled: bool = False
     wake_word: str = "hey neron"
+    activation_phrase: str = "neron"
+    listen_in_background: bool = True
     sample_rate: int = 16000
     vad_sensitivity: int = 2
     stt_provider: str = "whisper"

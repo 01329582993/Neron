@@ -355,6 +355,8 @@ class NeronConsole:
 
         info_table.add_row("Security", f"[green]{mode}[/green] mode")
         info_table.add_row("Tools loaded", f"[cyan]{tool_count}[/cyan]")
+        info_table.add_row("Wake Hotkey", "[yellow]SHIFT+L[/yellow]")
+        info_table.add_row("Voice Wake", "[yellow]'Hey Neron' or 'Neron'[/yellow]")
         info_table.add_row("Emergency Stop", "[yellow]CTRL+ALT+N[/yellow]")
         info_table.add_row("Exit", "[yellow]'exit' or CTRL+C[/yellow]")
 
