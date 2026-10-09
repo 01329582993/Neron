@@ -4,6 +4,31 @@ All notable changes to the Neron platform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-rc1] - 2026-10-09
+
+### Added
+- **Stage 15 — Cross-Platform Packaging & Distribution Pipelines**:
+  - `neron/packaging/config.py`: `PackagingConfig` governing cross-platform distribution builds across Windows, Linux, and standalone offline packages.
+  - `neron/packaging/spec.py`: `PyInstallerSpecGenerator` producing complete, reproducible PyInstaller `.spec` files bundling all core runtime dependencies, hidden imports, and assets.
+  - `neron/packaging/windows.py`:
+    - `WindowsPackager`: Builds Windows standalone executable command lines and generates customized InnoSetup `.iss` installers with Start Menu shortcuts, desktop icons, and uninstallation routines.
+  - `neron/packaging/linux.py`:
+    - `LinuxPackager`: Generates Freedesktop AppImage directory trees (`AppDir/AppRun`, `neron.desktop`, icon) and Debian package trees (`DEBIAN/control`, `postinst`, `prerm`).
+  - `neron/packaging/offline.py`:
+    - `OfflineBundleGenerator`: Produces self-contained offline installer distributions with preconfigured local Ollama/GGUF fallback routing, bootstrap scripts (`install_offline.bat` and `install_offline.sh`), and a SHA256 integrity inventory (`bundle_manifest.json`).
+  - `neron/packaging/builder.py`: `PackageBuilder` unifying multi-platform packaging commands.
+  - Distribution build automation scripts in `scripts/`:
+    - `scripts/build_windows.ps1`: Automated PowerShell builder for Windows executables and InnoSetup installers.
+    - `scripts/build_linux.sh`: Automated bash builder for Linux AppImages and Debian packages.
+    - `scripts/build_offline.py`: Python CLI generator for zero-config offline bundles.
+  - `tests/test_packaging.py`: 14 comprehensive unit and integration tests covering spec generation, InnoSetup directives, Linux packaging, SHA256 offline manifests, and multi-platform builders.
+
+### Test Suite
+- **293/293 tests passing** (279 previous + 14 new Stage 15 tests, zero regressions).
+- **All 16 development roadmap milestones (Stages 0–15) 100% COMPLETE!**
+
+---
+
 ## [0.10.0-alpha] - 2026-10-09
 
 ### Added

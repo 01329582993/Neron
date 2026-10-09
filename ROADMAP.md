@@ -23,7 +23,7 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | ✅ **Complete** |
 | **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | ✅ **Complete** |
 | **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | ✅ **Complete** |
-| **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | 📋 Planned |
+| **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | ✅ **Complete** |
 
 ---
 
@@ -135,6 +135,6 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 - [x] Atomic switch and automated rollback on failure.
 
 ### Stage 15: Cross-Platform Packaging & Distribution
-- [ ] Windows PyInstaller / InnoSetup packaging.
-- [ ] Linux AppImage / debian package build pipelines.
-- [ ] Standalone offline installer bundled with core models.
+- [x] Windows PyInstaller / InnoSetup packaging.
+- [x] Linux AppImage / debian package build pipelines.
+- [x] Standalone offline installer bundled with core models.
