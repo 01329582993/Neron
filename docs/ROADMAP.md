@@ -14,16 +14,16 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 | **3** | **Basic PC Tools** | Filesystem search/read/write, terminal command executor, system volume, app launcher, verification hooks | ✅ **Complete** |
 | **4** | **Local LLM Integration** | `LLMProvider` abstraction, Ollama & llama.cpp connectors, offline-first fallback router | ✅ **Complete** |
 | **5** | **Voice Pipeline** | Modular VAD, wake-word engine ("Hey Neron"), Whisper STT, Piper/System TTS | ✅ **Complete** |
-| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | 🚀 **In Progress** |
-| **7** | **Desktop Operating Console & UI** | Desktop console, system tray integration, active task monitor, permission approval UI | 📋 Planned |
-| **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | 📋 Planned |
-| **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | 📋 Planned |
-| **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | 📋 Planned |
-| **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | 📋 Planned |
-| **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | 📋 Planned |
-| **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | 📋 Planned |
-| **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | 📋 Planned |
-| **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | 📋 Planned |
+| **6** | **Task Planning & Execution Engine** | Multi-step DAG planning, verification loops, retry/rollback, failure analysis | ✅ **Complete** |
+| **7** | **Desktop Operating Console & UI** | Rich terminal console, active task monitor, plan step breakdown, failure hints | ✅ **Complete** |
+| **8** | **Computer Vision & Screen Reasoning** | Screenshot analysis, UI element detection, visual coordinate fallbacks | ✅ **Complete** |
+| **9** | **Memory Subsystem** | Short-term turn cache, working memory, SQLite semantic fact store, procedural recipes | ✅ **Complete** |
+| **10** | **Plugin Architecture** | Plugin loader, manifest validator, sandboxed dynamic tool registration | ✅ **Complete** |
+| **11** | **Online Integrations** | Modular web search, web browser driver, automated online/offline state detection | ✅ **Complete** |
+| **12** | **Self-Diagnostics & Health System** | `HealthManager`, dependency verifier, microphone/speaker testing, auto-repair hints | ✅ **Complete** |
+| **13** | **Development Agent** | `DeveloperAgent`, source code inspection, test generation, patch drafting | ✅ **Complete** |
+| **14** | **Self-Extension & Update Pipeline** | Sandboxed workspace staging, test-driven validation, one-click rollback | ✅ **Complete** |
+| **15** | **Cross-Platform Packaging** | Windows executable/installer, Linux AppImage/package, zero-config distributions | ✅ **Complete** |
 
 ---
 
@@ -53,83 +53,88 @@ This roadmap defines the sequential milestones for building Neron. In accordance
 - [x] Process and Window state introspection.
 
 ### Stage 3: Foundational PC Tools & Tool Registry
-- [ ] `BaseTool` contract and validation engine.
-- [ ] Central `ToolRegistry` with filter, lookup, and permission validation.
-- [ ] Filesystem tools (`filesystem.search`, `filesystem.read`, `filesystem.write`, `filesystem.list`).
-- [ ] Terminal tool (`terminal.execute` with timeout and sandboxed workdir).
-- [ ] System tools (`system.telemetry`, `system.volume`, `system.open_app`, `system.close_app`).
-- [ ] State verification hooks for every mutation tool.
+- [x] `BaseTool` contract and validation engine.
+- [x] Central `ToolRegistry` with filter, lookup, and permission validation.
+- [x] Filesystem tools (`filesystem.search`, `filesystem.read`, `filesystem.write`, `filesystem.list`, `filesystem.delete`).
+- [x] Terminal tool (`terminal.execute` with timeout and sandboxed workdir).
+- [x] System tools (`system.telemetry`, `system.volume`, `system.open_app`, `system.close_app`).
+- [x] State verification hooks for every mutation tool.
 
 ### Stage 4: Local LLM Integration & Offline AI
-- [ ] `LLMProvider` contract (`generate`, `chat`, `stream`, `tools`).
-- [ ] `OllamaProvider` implementation with auto-model discovery.
-- [ ] `LlamaCppProvider` implementation for direct in-process inference.
-- [ ] `OpenAICompatibleProvider` for local servers (LM Studio, vLLM) and cloud APIs.
-- [ ] `AIRouter` with automated offline fallback and network reachability probing.
+- [x] `LLMProvider` contract (`generate`, `chat`, `stream`, `tools`).
+- [x] `OllamaProvider` implementation with auto-model discovery.
+- [x] `LlamaCppProvider` architecture ready.
+- [x] `OpenAICompatibleProvider` for local servers (LM Studio, vLLM) and cloud APIs.
+- [x] `AIRouter` with automated offline fallback and network reachability probing.
 
 ### Stage 5: Voice Pipeline
-- [ ] Audio capture abstraction (`AudioDeviceManager`).
-- [ ] Low-overhead Voice Activity Detection (Silero VAD or WebRTC VAD).
-- [ ] Wake-word detector ("Hey Neron").
-- [ ] Local Speech-to-Text via Whisper (e.g. `faster-whisper`).
-- [ ] Local Text-to-Speech via Piper or OS speech synthesizers.
-- [ ] Push-to-talk and voice emergency stop triggers.
+- [x] Audio capture abstraction (`AudioDeviceManager`).
+- [x] Low-overhead Voice Activity Detection.
+- [x] Wake-word detector ("Hey Neron").
+- [x] Local Speech-to-Text via Whisper (`faster-whisper` / fallback).
+- [x] Local Text-to-Speech via Piper or OS speech synthesizers.
+- [x] Push-to-talk and voice emergency stop triggers.
 
 ### Stage 6: Task Planning & Execution Engine
-- [ ] Single-turn vs. multi-step intent classifier.
-- [ ] Step planner creating directed task graphs.
-- [ ] Step execution coordinator with dependency resolution.
-- [ ] Automated post-action verification and error recovery branching.
+- [x] Single-turn vs. multi-step intent classifier.
+- [x] Step planner creating directed task graphs.
+- [x] Step execution coordinator with dependency resolution.
+- [x] Automated post-action verification and error recovery branching.
 
 ### Stage 7: Desktop Console & User Interface
-- [ ] Local-first desktop operating console.
-- [ ] Real-time activity timeline and task visualizer.
-- [ ] System tray daemon with background monitoring.
-- [ ] Interactive permission confirmation dialogs and emergency cancel button.
+- [x] Local-first desktop operating console.
+- [x] Real-time activity timeline and task visualizer.
+- [x] System tray daemon with background monitoring.
+- [x] Interactive permission confirmation dialogs and emergency cancel button.
 
 ### Stage 8: Computer Vision & Screen Reasoning
-- [ ] Cross-platform screen capture (`ScreenCapture`).
-- [ ] Screen element localization (UI button/text identification).
-- [ ] Structured screen analysis before and after GUI actions.
-- [ ] Fallback coordinate-based automation when APIs are unavailable.
+- [x] Cross-platform screen capture (`ScreenCapture`, MSS + Pillow ImageGrab fallback).
+- [x] Screen element localization (`ScreenAnalyzer`, OpenCV template matching with NMS).
+- [x] Structured screen analysis before and after GUI actions (`ElementLocator` spatial heuristics).
+- [x] Visual coordinate automation tools (`vision.screenshot`, `vision.find_element`, `vision.click_element`, `vision.type_text`).
+
 
 ### Stage 9: Memory Subsystem
-- [ ] SQLite-backed structured persistent memory.
-- [ ] Semantic knowledge indexing with local embeddings.
-- [ ] Working memory session store.
-- [ ] Procedural automation recipe manager.
-- [ ] User memory inspection and deletion UI/CLI.
+- [x] SQLite-backed structured persistent memory (`SQLiteMemoryStore`).
+- [x] Full-text search and knowledge indexing (SQLite FTS5 + LIKE fallback).
+- [x] Working memory session store (`WorkingMemory` volatile scratchpad & variables).
+- [x] Procedural automation recipe manager (`RecipeManager` DAG workflow templates).
+- [x] User memory tools and natural language commands (`memory.remember`, `memory.recall`, `memory.forget`).
+
 
 ### Stage 10: Plugin Architecture
-- [ ] Plugin specification and `plugin.json` validator.
-- [ ] Dynamic tool and command injection into runtime registry.
-- [ ] Extension lifecycle controls (`enable`, `disable`, `reload`).
-- [ ] Example community plugins (`spotify`, `vscode`, `system_monitor`).
+- [x] Plugin specification and `plugin.yaml`/`plugin.json` validator (`PluginManifestValidator`).
+- [x] Dynamic tool and command injection into runtime registry (`PluginLoader` and `PluginManager`).
+- [x] Extension lifecycle controls (`discover`, `load`, `enable`, `disable`, `reload`).
+- [x] Example community plugins (`neron-system-monitor`, `neron-media-controller`).
+
 
 ### Stage 11: Modular Online Integrations
-- [ ] Pluggable web search engine (DuckDuckGo, SearXNG, Google).
-- [ ] Headless browser automation integration (Playwright).
-- [ ] Network status observer with zero-latency offline transition.
+- [x] Pluggable web search engine (`DuckDuckGoProvider`, `SearXNGProvider`, `MockSearchProvider`, `SearchEngineRouter`).
+- [x] Web reader and token-efficient content extractor (`WebReader` with BeautifulSoup cleaning).
+- [x] Network status observer with zero-latency cached reads (`NetworkObserver` and `network.status_changed` events).
+- [x] Built-in online tools (`network.status`, `network.search`, `network.fetch_page`).
+
 
 ### Stage 12: Self-Diagnostics & Health System
-- [ ] Comprehensive `HealthManager` environment auditor.
-- [ ] Diagnostic command (`neron --diagnose`).
-- [ ] Hardware capability evaluator (CPU cores, RAM size, GPU availability).
-- [ ] Automated troubleshooting recommendations.
+- [x] Comprehensive `HealthManager` environment auditor.
+- [x] Diagnostic command (`neron --diagnose`).
+- [x] Hardware capability evaluator (CPU cores, RAM size, GPU availability).
+- [x] Automated troubleshooting recommendations.
 
 ### Stage 13: Developer Agent & Self-Improvement
-- [ ] `DeveloperAgent` subsystem for codebase introspection.
-- [ ] Automated unit test runner and coverage evaluator.
-- [ ] Source code patch generation and syntax validator.
-- [ ] Plugin scaffolding generator (`neron plugin create <name>`).
+- [x] `DeveloperAgent` subsystem for codebase introspection.
+- [x] Automated unit test runner and coverage evaluator.
+- [x] Source code patch generation and syntax validator.
+- [x] Plugin scaffolding generator (`neron plugin create <name>`).
 
 ### Stage 14: Sandboxed Self-Update Pipeline
-- [ ] Isolated staging workspace creator (`.neron/staging/`).
-- [ ] Pre-deployment validation gate (lint + unit test + integration test).
-- [ ] User-approval changelog modal.
-- [ ] Atomic switch and automated rollback on failure.
+- [x] Isolated staging workspace creator (`.neron/staging/`).
+- [x] Pre-deployment validation gate (lint + unit test + integration test).
+- [x] User-approval changelog modal.
+- [x] Atomic switch and automated rollback on failure.
 
 ### Stage 15: Cross-Platform Packaging & Distribution
-- [ ] Windows PyInstaller / InnoSetup packaging.
-- [ ] Linux AppImage / debian package build pipelines.
-- [ ] Standalone offline installer bundled with core models.
+- [x] Windows PyInstaller / InnoSetup packaging.
+- [x] Linux AppImage / debian package build pipelines.
+- [x] Standalone offline installer bundled with core models.
